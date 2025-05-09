@@ -12,6 +12,35 @@ from telegram.ext import Updater, MessageHandler, CommandHandler, Filters
 from telegram.ext.dispatcher import run_async
 
 from config import BOTNAME, TOKEN
+from flask import Flask, request
+import os
+
+app = Flask(__name__)
+
+updater = Updater(TOKEN, use_context=True)
+dp = updater.dispatcher
+
+
+# Webhook route
+@app.route(f"/{TOKEN}", methods=["POST"])
+def webhook():
+    update = Update.de_json(request.get_json(force=True), updater.bot)
+    dp.process_update(update)
+    return "ok"
+
+@app.route("/")
+def index():
+    return "Bot is running"
+
+if __name__ == "__main__":
+    # Set webhook (replace with your domain + HTTPS)
+    WEBHOOK_URL = f"https://your-domain.com/{TOKEN}"
+    updater.bot.set_webhook(WEBHOOK_URL)
+
+    # Run Flask app on port 8443 or as needed
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8443)))
+
+
 
 help_text = (
     "Welcomes everyone that enters a group chat that this bot is a "
