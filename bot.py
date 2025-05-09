@@ -34,7 +34,7 @@ def index():
 
 if __name__ == "__main__":
     # Set webhook (replace with your domain + HTTPS)
-    WEBHOOK_URL = f"https://your-domain.com/{TOKEN}"
+    WEBHOOK_URL = f"https://welcomebot-ir9d.onrender.com/{TOKEN}"
     updater.bot.set_webhook(WEBHOOK_URL)
 
     # Run Flask app on port 8443 or as needed
