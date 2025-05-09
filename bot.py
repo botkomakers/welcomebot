@@ -19,7 +19,7 @@ help_text = (
     "the group is able to change settings.\nCommands:\n\n"
     "/welcome - Set welcome message\n"
     "/goodbye - Set goodbye message\n"
-    "/disable\\_goodbye - Disable the goodbye message\n"
+    "/disable_goodbye - Disable the goodbye message\n"
     "/lock - Only the person who invited the bot can change messages\n"
     "/unlock - Everyone can change messages\n"
     '/quiet - Disable "Sorry, only the person who..." '
@@ -32,17 +32,6 @@ help_text = (
     "is also supported.\n"
 )
 
-"""
-Create database object
-Database schema:
-<chat_id> -> welcome message
-<chat_id>_bye -> goodbye message
-<chat_id>_adm -> user id of the user who invited the bot
-<chat_id>_lck -> boolean if the bot is locked or unlocked
-<chat_id>_quiet -> boolean if the bot is quieted
-
-chats -> list of chat ids where the bot has received messages in.
-"""
 # Create database object
 db = pickledb.load("bot.db", True)
 
@@ -58,7 +47,6 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-
 
 @run_async
 def send_async(context, *args, **kwargs):
@@ -97,7 +85,7 @@ def check(update, context, override_lock=None):
 # Welcome a user to the chat
 def welcome(update, context, new_member):
     """ Welcomes a user to the chat """
-
+    
     message = update.message
     chat_id = message.chat.id
     logger.info(
@@ -117,7 +105,27 @@ def welcome(update, context, new_member):
     # Replace placeholders and send message
     text = text.replace("$username", new_member.first_name)
     text = text.replace("$title", message.chat.title)
-    send_async(context, chat_id=chat_id, text=text, parse_mode=ParseMode.HTML)
+    
+    # Get the user's profile picture (if any)
+    user_profile_photo = context.bot.get_user_profile_photos(new_member.id)
+    
+    # Prepare additional information about the user
+    user_info = f"Name: {new_member.full_name}\n"
+    user_info += f"Username: @{new_member.username}\n"
+    
+    if user_profile_photo.total_count > 0:
+        profile_photo = user_profile_photo.photos[0][-1].file_id
+        context.bot.send_photo(chat_id=chat_id, photo=profile_photo)
+    else:
+        user_info += "No profile picture found."
+    
+    # Send the welcome message with user data
+    send_async(
+        context, 
+        chat_id=chat_id, 
+        text=f"{text}\n\n{user_info}", 
+        parse_mode=ParseMode.HTML
+    )
 
 
 # Welcome a user to the chat
