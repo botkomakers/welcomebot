@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: social-video-bot
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python3 bot.py"
+    envVars:
+      - key: PORT
+        value: 8080
