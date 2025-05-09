@@ -1,2 +1,2 @@
 BOTNAME = "usernameofbot"
-TOKEN = "TOKEN"
+TOKEN = "7980272351:AAF4Ck8oAD8PYrSmRZpDUtITkxTpe2b6XrE"
